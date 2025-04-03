@@ -9,7 +9,10 @@ enum NetworkError: Error {
 
 class NetworkManager {
     static let shared = NetworkManager()
-    private init() {}
+    
+    private init() {
+        KeyManager.shared.saveKeyInsecure(key: "apiKey", value: "1234567890abcdef")
+    }
     
     func fetchWeather(city: String) async throws -> WeatherResponse {
         // First get coordinates for the city
