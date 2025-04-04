@@ -1,0 +1,40 @@
+name: Scanning code for volnurabilities issues
+
+on:
+  push:
+    branches: [ "develop" ]
+  pull_request: # Trigger on pull requests from all branches
+ 
+jobs:
+  analyze:
+    name:  Analyze Swift code with CodeQL
+    runs-on: ${{ (matrix.language == 'swift' && 'macos-latest') || 'ubuntu-latest' }}
+    permissions:
+      security-events: write
+      packages: read
+      actions: read
+      contents: read
+
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [swift]
+        
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    # Initializes the CodeQL tools for scanning.
+    - name: Initialize CodeQL
+      uses: github/codeql-action/init@v3
+      with:
+        languages: swift
+        config: 
+            queries:
+              - security-and-quality  # Includes OWASP Top 10 vulnerability checks
+    
+    - name: Autobuild
+      uses: github/codeql-action/autobuild@v2
+
+    - name: Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@v3
